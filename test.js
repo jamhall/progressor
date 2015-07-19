@@ -3,6 +3,7 @@ var Progressor = require('./lib/index.js');
 Progressor.setPlaceholderFormatDefinition('max', function(bar) {
   return bar.max;
 });
+Progress.addFormat('test', )
 
 Progressor.addFormat('test', '%bar%\nfoobar');
 var numberImages = 5;
