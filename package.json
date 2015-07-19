@@ -1,0 +1,20 @@
+{
+  "name": "progressor",
+  "version": "0.0.0",
+  "description": "A nice console progress bar",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "keywords": [
+    "progress",
+    "bar",
+    "console",
+    "progression"
+  ],
+  "author": "Jamie Hall",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^3.10.0"
+  }
+}
