@@ -15,6 +15,9 @@
   "author": "Jamie Hall",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^3.10.0"
+    "lodash": "^3.10.0",
+    "pad": "^0.1.0",
+    "sprintf": "^0.1.5",
+    "sprintf-js": "^1.0.3"
   }
 }
