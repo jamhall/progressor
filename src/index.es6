@@ -4,6 +4,7 @@ import {
     sprintf
 }
 from 'sprintf';
+import _ from 'lodash';
 class Progressor {
 
     constructor(options, max) {
@@ -29,11 +30,6 @@ class Progressor {
         this.overwrite = true;
         this.output = process.stdout;
         this.formatters = null;
-        this.overwrite = (message) => {
-            _output('overwriting');
-            let lines = message.split("\n");
-        }
-
         this.max = this._setMaxSteps(max);
         this.options = this._.merge(this.options, options);
         this.format = Progressor._formats[this.options.format];
@@ -68,7 +64,7 @@ class Progressor {
         this.update(this.format.replace(/%([a-z\-_]+)(?:\:([^%]+))?%/g, (matches, part1, part2) => {
             var formatter = this.getPlaceholderFormatterDefinition(part1);
             if (formatter) {
-                text = formatter.call();
+                text = formatter(this);
             } else if (this.messages.hasOwnProperty(part1)) {
                 text = this.messages[part1];
             } else {
@@ -128,22 +124,32 @@ class Progressor {
     update(message) {
         let lines = message.split("\n");
         if (null !== this.lastMessagesLength) {
-            lines.forEach((line, index) => {
-                if (this.lastMessagesLength > Helpers.strlenWithoutDecoration(line)) {
-                    lines[index] = pad(line, this.lastMessagesLength, "\x20");
-                }
-            });
+          for (let index in lines) {
+            let line = lines[index];
+            if (this.lastMessagesLength > Helpers.strlenWithoutDecoration(line)) {
+                lines[index] = pad(line, this.lastMessagesLength, "\x20");
+            }
+          }
         }
 
-        this.output.write("\x0D");
+        if (this.overwrite) {
+          // move back to the beginning of the progress bar before redrawing it
+          this.output.write("\x0D");
+        } else if(this.step > 0) {
+          this.output.write("\n");
+        }
+
         this.output.write(lines.join("\n"));
         this.lastMessagesLength = 0;
-        lines.forEach((line) => {
-            let len = Helpers.strlenWithoutDecoration(line);
-            if (len > this.lastMessagesLength) {
-                this.lastMessagesLength = len;
-            }
-        });
+
+        for (let index in lines) {
+          let line = lines[index];
+          let len = Helpers.strlenWithoutDecoration(line);
+
+          if (len > this.lastMessagesLength) {
+              this.lastMessagesLength = len;
+          }
+        }
     }
 
     getBarCharacter() {
@@ -154,59 +160,60 @@ class Progressor {
     }
 
     initPlaceholders() {
-        return {
-            'bar': () => {
-                let completeBars = Math.floor(this.max > 0 ? this.percent * this.options.barWidth : this.step % this.options.barWidth);
-                let display = this.getBarCharacter()
+        let placeholders =  {
+            'bar': (bar) => {
+                let completeBars = Math.floor(bar.max > 0 ? bar.percent * bar.options.barWidth : bar.step % bar.options.barWidth);
+                let display = bar.getBarCharacter()
                     .repeat(completeBars);
-                if (completeBars < this.options.barWidth) {
-                    let emptyBars = this.options.barWidth - completeBars - Helpers.strlenWithoutDecoration(this.options.progressChar);
-                    display = display + this.options.progressChar + this.options.emptyBarChar.repeat(emptyBars);
+                if (completeBars < bar.options.barWidth) {
+                    let emptyBars = bar.options.barWidth - completeBars - Helpers.strlenWithoutDecoration(bar.options.progressChar);
+                    display = display + bar.options.progressChar + bar.options.emptyBarChar.repeat(emptyBars);
                 }
                 return display;
             },
-            'elapsed': () => {
-                let seconds = (Date.now() - this.startTime) / 1000;
+            'elapsed': (bar) => {
+                let seconds = (Date.now() - bar.startTime) / 1000;
                 return Helpers.formatTime(seconds);
             },
-            'max': () => {
-                return this.max;
+            'max': (bar) => {
+                return bar.max;
             },
-            'percent': () => {
-                return Math.floor(this.percent * 100);
+            'percent': (bar) => {
+                return Math.floor(bar.percent * 100);
             },
-            'estimated': () => {
+            'estimated': (bar) => {
                 let estimated;
-                if (!this.max) {
+                if (!bar.max) {
                     throw new Error('Unable to display the estimated time if the maximum number of steps is not set.');
                 }
-                if (!this.step) {
+                if (!bar.step) {
                     estimated = 0;
                 } else {
-                    estimated = Math.round(((Date.now() - this.startTime) / 1000) / this.step * this.max);
+                    estimated = Math.round(((Date.now() - bar.startTime) / 1000) / bar.step * bar.max);
                 }
                 return Helpers.formatTime(estimated);
             },
-            'current': () => {
-                return pad(this.step.toString(), this.options.stepWidth, ' ');
+            'current': (bar) => {
+                return pad(bar.step.toString(), bar.options.stepWidth, ' ');
             },
-            'memory': () => {
+            'memory': (bar) => {
                 let memoryUsage = process.memoryUsage();
                 return Helpers.formatMemory(memoryUsage.rss);
             },
-            'remaining': () => {
+            'remaining': (bar) => {
                 let remaining;
-                if (!this.max) {
+                if (!bar.max) {
                     throw new Error('Unable to display the remaining time if the maximum number of steps is not set.');
                 }
-                if (!this.step) {
+                if (!bar.step) {
                     remaining = 0;
                 } else {
-                    remaining = Math.round(((Date.now() - this.startTime) / 1000) / this.step * (this.max - this.step));
+                    remaining = Math.round(((Date.now() - bar.startTime) / 1000) / bar.step * (bar.max - bar.step));
                 }
                 return Helpers.formatTime(remaining);
             }
         }
+        return _.merge(placeholders, Progressor._customPlaceholders);
     }
     getPlaceholderFormatterDefinition(formatter) {
         if (!this.formatters) {
@@ -233,7 +240,12 @@ class Progressor {
     static addFormat(name, definition) {
         this._formats[name] = definition;
     }
+    static setPlaceholderFormatDefinition(name, definition) {
+      this._customPlaceholders[name] = definition;
+    }
 };
+
+Progressor._customPlaceholders = {};
 
 Progressor._formats = {
     'normal': ' %current%/%max% [%bar%] %percent:3s%%',
