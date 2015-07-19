@@ -25,7 +25,6 @@ class Progressor {
         this.startTime;
         this.percent = 0.0;
         this.lastMessagesLength = 0;
-        this.formatLineCount;
         this.messages = {};
         this.overwrite = true;
         this.output = process.stdout;
@@ -33,6 +32,7 @@ class Progressor {
         this.max = this._setMaxSteps(max);
         this.options = this._.merge(this.options, options);
         this.format = Progressor._formats[this.options.format];
+        this.formatLineCount = this.format.split("\n").length -1;
     }
 
     getFormats() {
@@ -46,6 +46,7 @@ class Progressor {
         if (null !== max) {
             this._setMaxSteps(max);
         }
+        this.output.write("\n");
         this.display();
     }
 
@@ -137,6 +138,10 @@ class Progressor {
           this.output.write("\x0D");
         } else if(this.step > 0) {
           this.output.write("\n");
+        }
+
+        if (this.formatLineCount) {
+          this.output.write(sprintf("\033[%dA", this.formatLineCount));
         }
 
         this.output.write(lines.join("\n"));
