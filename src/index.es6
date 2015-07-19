@@ -25,7 +25,7 @@ class Progressor {
         this.percent = 0.0;
         this.lastMessagesLength = 0;
         this.formatLineCount;
-        this.messages;
+        this.messages = {};
         this.overwrite = true;
         this.output = process.stdout;
         this.formatters = null;
@@ -191,18 +191,18 @@ class Progressor {
                 return pad(this.step.toString(), this.options.stepWidth, ' ');
             },
             'memory': () => {
-                var memoryUsage = process.memoryUsage();
+                let memoryUsage = process.memoryUsage();
                 return Helpers.formatMemory(memoryUsage.rss);
             },
             'remaining': () => {
                 let remaining;
-                if (!this._max) {
+                if (!this.max) {
                     throw new Error('Unable to display the remaining time if the maximum number of steps is not set.');
                 }
                 if (!this.step) {
                     remaining = 0;
                 } else {
-                    remaining = Math.round(((Date.now() - this.startTime) / 1000) / this.step * (this.max - this.steps));
+                    remaining = Math.round(((Date.now() - this.startTime) / 1000) / this.step * (this.max - this.step));
                 }
                 return Helpers.formatTime(remaining);
             }
@@ -218,7 +218,6 @@ class Progressor {
     setMessage(message, name = 'message') {
         this.messages[name] = message;
     }
-
     /**
      * Finishes the progress output.
      */
