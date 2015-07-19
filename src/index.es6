@@ -1,3 +1,6 @@
+import Helpers from './helpers'
+import pad from 'pad';
+
 class Progressor {
 
    constructor(options, max) {
@@ -8,7 +11,7 @@ class Progressor {
          emptyBarChar: '-',
          progressChar: '>',
          redrawFreq: 1,
-         format: 'verbose'
+         format: 'debug'
       }
 
       this.step = 0;
@@ -63,7 +66,7 @@ class Progressor {
         if(formatter){
           return formatter.call();
         };
-        return 'jamie';
+        return matches;
       }));
    }
 
@@ -121,8 +124,34 @@ class Progressor {
    initPlaceholders() {
      return {
        'elapsed': () => {
-         return Date.now()  - this.startTime;
-       }
+         let seconds = (Date.now()  - this.startTime) / 1000;
+         return Helpers.formatTime(seconds);
+       },
+       'max': () => {
+                return this.max;
+        },
+        'percent' : () =>  {
+                return Math.floor(this.percent * 100);
+        },
+        'estimated' : () => {
+                let estimated;
+                if (!this.max) {
+                    throw new Exception('Unable to display the estimated time if the maximum number of steps is not set.');
+                }
+                if (!this.step) {
+                    estimated = 0;
+                } else {
+                   estimated = Math.round((Date.now() - this.startTime) / this.step * this.max);
+                }
+                return Helpers.formatTime(estimated);
+        },
+        'current': () => {
+          return pad(this.step.toString(), this.options.stepWidth, ' ');
+        },
+        'memory': () => {
+          var memoryUsage = process.memoryUsage();
+          return Helpers.formatMemory(memoryUsage.rss);
+        }
      }
    }
    getPlaceholderFormatterDefinition(formatter) {
@@ -161,4 +190,4 @@ Progressor._formats = {
    'debug': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
    'debug_nomax': ' %current% [%bar%] %elapsed:6s% %memory:6s%'
 }
-module.exports = Progressor;
+export default Progressor;

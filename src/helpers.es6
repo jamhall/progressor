@@ -20,7 +20,21 @@ class Helpers {
              return Math.ceil(seconds / format[2]) + ' ' + format[1];
          }
   }
+  static formatMemory(memory) {
+    let sprintf = require('sprintf').sprintf;
+    if (memory >= 1024 * 1024 * 1024) {
+        return sprintf('%.1f GiB', memory / 1024 / 1024 / 1024);
+    }
+    if (memory >= 1024 * 1024) {
+        return sprintf('%.1f MiB', memory / 1024 / 1024);
+    }
+    if (memory >= 1024) {
+        return sprintf('%d KiB', memory / 1024);
+    }
+    return sprintf('%d B', memory);
+
+  }
 
 }
 
-module.exports = Helpers;
+export default Helpers;
