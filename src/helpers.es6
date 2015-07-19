@@ -32,7 +32,10 @@ class Helpers {
         return sprintf('%d KiB', memory / 1024);
     }
     return sprintf('%d B', memory);
-
+  }
+  static strlenWithoutDecoration(string) {
+    var pattern = /\033\[[^m]*m/g;
+    return string.replace(pattern, "\n").length;
   }
 
 }

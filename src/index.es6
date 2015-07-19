@@ -11,6 +11,7 @@ class Progressor {
          emptyBarChar: '-',
          progressChar: '>',
          redrawFreq: 1,
+         barChar: null,
          format: 'debug'
       }
 
@@ -39,7 +40,6 @@ class Progressor {
       return Progressor._formats;
    }
 
-
    start(max = null) {
       this.startTime = Date.now();
       this.step = 0;
@@ -62,18 +62,17 @@ class Progressor {
     */
    display() {
       this.update(this.format.replace(/%([a-z\-_]+)(?:\:([^%]+))?%/g, (matches, part1, part2) => {
-        var formatter = this.getPlaceholderFormatterDefinition(part1);
-        if(formatter){
-          return formatter.call();
-        };
-        return matches;
+         var formatter = this.getPlaceholderFormatterDefinition(part1);
+         if (formatter) {
+            return formatter.call();
+         };
+         return matches;
       }));
    }
 
    clearLine() {
       this.output.clearLine();
    }
-
    /**
     * Removes the progress bar from the current line.
     *
@@ -107,64 +106,88 @@ class Progressor {
          let currentPeriod = parseInt(step / this.options.redrawFreq);
          this.step = step;
          this.percent = this.max ? parseFloat(this.step / this.max) : 0;
-         if (previousPeriod !== currentPeriod || this.max === step) {
+         if (previousPeriod !== currentPeriod || this.max == step) {
             this.display();
          }
-      }
-   /**
-    * Updates the display
-    */
-   update(message) {
-     console.log('Message', message);
-
    }
-   /**
-    *
-    */
-   initPlaceholders() {
-     return {
-       'elapsed': () => {
-         let seconds = (Date.now()  - this.startTime) / 1000;
-         return Helpers.formatTime(seconds);
-       },
-       'max': () => {
-                return this.max;
-        },
-        'percent' : () =>  {
-                return Math.floor(this.percent * 100);
-        },
-        'estimated' : () => {
-                let estimated;
-                if (!this.max) {
-                    throw new Exception('Unable to display the estimated time if the maximum number of steps is not set.');
-                }
-                if (!this.step) {
-                    estimated = 0;
-                } else {
-                   estimated = Math.round((Date.now() - this.startTime) / this.step * this.max);
-                }
-                return Helpers.formatTime(estimated);
-        },
-        'current': () => {
-          return pad(this.step.toString(), this.options.stepWidth, ' ');
-        },
-        'memory': () => {
-          var memoryUsage = process.memoryUsage();
-          return Helpers.formatMemory(memoryUsage.rss);
-        }
+    /**
+     * Updates the display
+     */
+   update(message) {
+       console.log(message);
+   }
+
+   getBarCharacter() {
+     if(null === this.options.barChar) {
+       return this.max ?  '=' : this.options.emptyBarChar;
      }
+     return this.options.barChar;
+   }
+
+   initPlaceholders() {
+      return {
+         'bar': () => {
+           let completeBars = Math.floor(this.max > 0 ? this.percent * this.options.barWidth : this.step % this.options.barWidth);
+           let display = this.getBarCharacter().repeat(completeBars);
+           if (completeBars < this.options.barWidth) {
+               let emptyBars = this.options.barWidth - completeBars - Helpers.strlenWithoutDecoration(this.options.progressChar);
+               display = display + this.options.progressChar + this.options.emptyBarChar.repeat(emptyBars);
+           }
+           return display;
+         },
+         'elapsed': () => {
+            let seconds = (Date.now() - this.startTime) / 1000;
+            return Helpers.formatTime(seconds);
+         },
+         'max': () => {
+            return this.max;
+         },
+         'percent': () => {
+            return Math.floor(this.percent * 100);
+         },
+         'estimated': () => {
+            let estimated;
+            if (!this.max) {
+               throw new Error('Unable to display the estimated time if the maximum number of steps is not set.');
+            }
+            if (!this.step) {
+               estimated = 0;
+            } else {
+               estimated = Math.round(((Date.now() - this.startTime) / 1000) / this.step * this.max);
+            }
+            return Helpers.formatTime(estimated);
+         },
+         'current': () => {
+            return pad(this.step.toString(), this.options.stepWidth, ' ');
+         },
+         'memory': () => {
+            var memoryUsage = process.memoryUsage();
+            return Helpers.formatMemory(memoryUsage.rss);
+         },
+         'remaining': () => {
+            let remaining;
+            if (!this._max) {
+               throw new Error('Unable to display the remaining time if the maximum number of steps is not set.');
+            }
+            if (!this.step) {
+               remaining = 0;
+            } else {
+               remaining = Math.round(((Date.now() - this.startTime) / 1000) / this.step * (this.max - this.steps));
+            }
+            return Helpers.formatTime(remaining);
+         }
+      }
    }
    getPlaceholderFormatterDefinition(formatter) {
-     if(!this.formatters) {
-       console.log('Initializing formatters');
-       this.formatters = this.initPlaceholders();
-     }
-     return this.formatters.hasOwnProperty(formatter) ? this.formatters[formatter] : null;
+      if (!this.formatters) {
+         console.log('Initializing formatters');
+         this.formatters = this.initPlaceholders();
+      }
+      return this.formatters.hasOwnProperty(formatter) ? this.formatters[formatter] : null;
    }
-
-  /**
-   * Finishes the progress output.
-   */
+   /**
+    * Finishes the progress output.
+    */
    finish() {
       if (!this.max) {
          this.max = this.step;
@@ -177,7 +200,6 @@ class Progressor {
    static addFormat(name, definition) {
       this._formats[name] = definition;
    }
-
 };
 
 Progressor._formats = {
