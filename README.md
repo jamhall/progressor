@@ -39,7 +39,7 @@ First we create an instance of `Progressor`,passing in the options (see below fo
 
  - `format` The chosen format(defaults to `normal`).
 
-### Formats
+### Built-in formats
 
 The built-in formats are the following:
 
@@ -56,7 +56,13 @@ If you don't set the number of steps for your progress bar, use the `_nomax` var
 * debug_nomax 
 
 
-### Placeholders
+### Custom Formats¶
+
+Instead of using a built-in format, you can set a custom format by passing the format into the options object:
+
+      var progressor = new Progressor({
+          format: "Progress: %percent%%. Filename %filename%"
+      }, 10);
 
 A progress bar format is a string that contains specific placeholders (a name enclosed with the `% `character); the placeholders are replaced based on the current progress of the bar. Here is a list of the built-in placeholders:
 
@@ -72,7 +78,9 @@ A progress bar format is a string that contains specific placeholders (a name en
 
 For instance, here is how you could set the format to be the same as the `debug` one:
 
-    bar.setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
+    var progressor = new Progressor({
+        format: " %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%"
+    }, 10);
 
 Notice the `:6s` part added to some placeholders? That's how you can tweak the appearance of the bar (formatting and alignment). The part after the colon (`:`) is used to set the `sprintf` format of the string.
 
@@ -109,11 +117,9 @@ If you want to display some information that depends on the progress bar display
 ### Custom messages
 
 The `%message%` placeholder allows you to specify a custom message to be displayed with the progress bar. But if you need more than one, just define your own:
-
-    Progressor.addFormat('minimal', "Progress: %percent%%. Filename %filename%");
     
     var progressor = new Progressor({
-      format: 'minimal'
+      format: "Progress: %percent%%. Filename %filename%"
     }, 10);
     
     progressor.setMessage('Hello', 'filename');
@@ -122,6 +128,4 @@ The `%message%` placeholder allows you to specify a custom message to be display
 ### Thanks
 
 Progressor is a clone of the excellent [Symfony progress bar](http://symfony.com/doc/current/components/console/helpers/progressbar.html) Thanks Symfony!
-
-
 
