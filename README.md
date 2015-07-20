@@ -1,5 +1,5 @@
 # Progressor
-### Nice progress bars for your nodejs based console apps.
+#### Nice progress bars for your nodejs based console apps.
 
 ![Image of advance progress bar](https://raw.githubusercontent.com/jamhall/progressor/master/examples/advanced.gif)
 
