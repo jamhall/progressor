@@ -2,4 +2,4 @@
 
 ### Nice progress bar for your nodejs based console apps.
 
-[![asciicast](https://asciinema.org/a/7a9w8sq315fhxksvsyzouc6c1.png)](https://asciinema.org/a/7a9w8sq315fhxksvsyzouc6c1)
+![Image of Progressor](https://raw.githubusercontent.com/jamhall/progressor/master/examples/advanced.gif)
