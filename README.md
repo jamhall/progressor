@@ -36,8 +36,8 @@ First we create an instance of `Progressor`,passing in the options (see below fo
  - `barChar` Bar character for the bar (defaults to `=`)
  - `beforeNewlines` Insert a number of new lines before outputting the progress bar(defaults to `null` and called on `start`)
  -  `afterNewlines` Insert a number of new lines after outputting the progress bar (defaults to `1` and called on `finish`)
-
  - `format` The chosen format(defaults to `normal`).
+ - `stream` The output stream (defaults to `process.stdout`)
 
 ### Built-in formats
 
@@ -129,3 +129,7 @@ The `%message%` placeholder allows you to specify a custom message to be display
 
 Progressor is a clone of the excellent [Symfony progress bar](http://symfony.com/doc/current/components/console/helpers/progressbar.html) Thanks Symfony!
 
+
+### License
+
+MIT
