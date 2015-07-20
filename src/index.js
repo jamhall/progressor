@@ -1,6 +1,6 @@
 import Helpers from './helpers'
 import pad from 'pad';
-import sprintf from 'sprintf';
+import { sprintf } from 'sprintf-js';
 import _ from 'lodash';
 import repeat from 'repeat-string';
 

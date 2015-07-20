@@ -1,4 +1,4 @@
-import { sprintf } from 'sprintf';
+import { sprintf } from 'sprintf-js';
 
 class Helpers {
 

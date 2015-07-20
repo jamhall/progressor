@@ -1,8 +1,12 @@
 {
   "name": "progressor",
   "version": "0.0.0",
-  "description": "A nice console progress bar",
-  "main": "index.js",
+  "description": "Flexible console progress bars",
+  "homepage": "https://github.com/jamhall/progressor",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jamhall/progressor.git"
+  },
   "scripts": {
     "test": "npm test"
   },
@@ -10,20 +14,31 @@
     "progress",
     "bar",
     "console",
-    "progression"
+    "progression",
+    "cli"
   ],
-  "author": "Jamie Hall",
+  "main": "lib/index.js",
+  "author": {
+    "name": "Jamie Hall",
+    "email": "hall@ill.eu",
+    "url": "https://github.com/jamhall"
+  },
   "license": "MIT",
   "dependencies": {
     "lodash": "^3.10.0",
     "pad": "^0.1.0",
     "repeat-string": "^1.5.2",
-    "sprintf": "^0.1.5",
     "sprintf-js": "^1.0.3"
   },
   "devDependencies": {
     "async": "^1.3.0",
     "chance": "^0.7.6",
     "request": "^2.58.0"
+  },
+  "bugs": {
+    "url": "https://github.com/jamhall/progressor/issues"
+  },
+  "engines": {
+    "node": ">=0.11.16"
   }
 }
