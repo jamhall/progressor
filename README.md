@@ -93,8 +93,17 @@ This code defines a new minimal format that you can then use for your progress b
     Progress: 0%
     Progress: 33%
     Progress: 100%
-	
+
+A format can contain any valid ANSI codes to set colors. For example, for the minimal example above, we could make the `percent` text red.
+
+    Progressor.addFormat('minimal', "Progress: \033[0;31m %percent%%\033[0m");
+
+
+### Custom placeholders
+
+
 ### Thanks
 
 Progressor is a clone of the excellent [Symfony progress bar](http://symfony.com/doc/current/components/console/helpers/progressbar.html) Thanks Symfony!
+
 
