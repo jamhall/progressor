@@ -13,11 +13,12 @@ Progressor.addFormat("test", " \033[44;37m %title:-37s% \033[0m\n %current%/%max
 var progressor = new Progressor({
   format: 'test',
   barChar: "\033[32m●\033[0m",
+  beforeNewlines: 2,
+  afterNewlines: 1,
   emptyBarChar: "\033[31m●\033[0m",
   progressChar: "\033[32m➤ \033[0m"
 }, 10);
 progressor.setMessage('Starting the demo... fingers crossed', 'title');
-process.stdout.write("\n\n");
 progressor.start();
 
 async.timesSeries(10, function (n, next) {

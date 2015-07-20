@@ -1,6 +1,6 @@
 import Helpers from './helpers'
 import pad from 'pad';
-import { sprintf } from 'sprintf';
+import sprintf from 'sprintf';
 import _ from 'lodash';
 import repeat from 'repeat-string';
 
@@ -15,7 +15,9 @@ class Progressor {
       redrawFreq: 1,
       overwrite: true,
       barChar: null,
-      format: 'normal'
+      format: 'normal',
+      beforeNewlines: null,
+      afterNewlines: null
     };
 
     this.step = 0;
@@ -26,8 +28,18 @@ class Progressor {
     this.output = process.stdout;
     this.formatters = null;
     this.options = _.merge(this.options, options);;
+    this.formats = _.merge({
+      'normal': ' %current%/%max% [%bar%] %percent:3s%%',
+      'normal_nomax': ' %current% [%bar%]',
+      'verbose': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
+      'verbose_nomax': ' %current% [%bar%] %elapsed:6s%',
+      'very_verbose': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
+      'very_verbose_nomax': ' %current% [%bar%] %elapsed:6s%',
+      'debug': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
+      'debug_nomax': ' %current% [%bar%] %elapsed:6s% %memory:6s%'
+    }, Progressor._customFormats);
 
-    this.format = Progressor._formats[this.options.format];
+    this.format = this.formats[this.options.format];
     let lineCount = this.format.split("\n").length -1;
 
     if(lineCount >1) {
@@ -151,6 +163,7 @@ class Progressor {
         this.lastMessagesLength = len;
       }
     }
+    this.output.write("\x0D");
   }
 
   getBarCharacter() {
@@ -229,6 +242,9 @@ class Progressor {
   }
 
   start(max = null) {
+    if(this.options.beforeNewlines) {
+      this.output.write(repeat("\n", parseInt(this.options.beforeNewlines)));
+    }
     this.startTime = Date.now();
     this.step = 0;
     this.percent = 0.0;
@@ -249,12 +265,13 @@ class Progressor {
       return;
     }
     this.setProgress(this.max);
-    this.output.write("\n\n");
-
+    if(this.options.afterNewlines) {
+      this.output.write(repeat("\n", parseInt(this.options.afterNewlines)));
+    }
   }
 
   static addFormat(name, definition) {
-    this._formats[name] = definition;
+    this._customFormats[name] = definition;
   }
 
   static setPlaceholderFormatDefinition(name, definition) {
@@ -264,14 +281,6 @@ class Progressor {
 
 Progressor._customPlaceholders = {};
 
-Progressor._formats = {
-  'normal': ' %current%/%max% [%bar%] %percent:3s%%',
-  'normal_nomax': ' %current% [%bar%]',
-  'verbose': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
-  'verbose_nomax': ' %current% [%bar%] %elapsed:6s%',
-  'very_verbose': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
-  'very_verbose_nomax': ' %current% [%bar%] %elapsed:6s%',
-  'debug': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
-  'debug_nomax': ' %current% [%bar%] %elapsed:6s% %memory:6s%'
-}
+Progressor._customFormats = { };
+
 export default Progressor;
