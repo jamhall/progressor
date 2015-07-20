@@ -1,15 +1,9 @@
 var async = require('async');
-var Progressor = require('./lib/index.js');
-Progressor.setPlaceholderFormatDefinition('max', function(bar) {
-  return bar.max;
-});
-Progress.addFormat('test', )
+var Progressor = require('./../lib/index.js');
 
-Progressor.addFormat('test', '%bar%\nfoobar');
-var numberImages = 5;
+var numberImages = 10;
 var progressor = new Progressor({
-  barWidth: 50,
-  format: 'test'
+  format: 'debug'
 }, numberImages);
 
 progressor.start();
