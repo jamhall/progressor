@@ -41,9 +41,9 @@ class Progressor {
       'debug_nomax': ' %current% [%bar%] %elapsed:6s% %memory:6s%'
     }, Progressor._customFormats);
 
-    let format = this.formats[this.options.format];
+    this.format = this.formats[this.options.format];
 
-    if (!format) {
+    if (!this.format) {
       this.format = this.options.format;
     }
 

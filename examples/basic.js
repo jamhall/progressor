@@ -12,4 +12,4 @@ var timer = setInterval(function () {
     progressor.finish();
     clearInterval(timer);
   }
-}, 1000);
+}, 500);
