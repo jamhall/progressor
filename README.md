@@ -7,6 +7,8 @@
 
 ### Installation
 
+[![NPM](https://nodei.co/npm/progressor.png)](https://nodei.co/npm/progressor/)
+
     npm install progressor --save
 
 ### Usage
