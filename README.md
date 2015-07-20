@@ -1,7 +1,9 @@
 # Progressor
 ### Nice progress bars for your nodejs based console apps.
 
-![Image of Progressor](https://raw.githubusercontent.com/jamhall/progressor/master/examples/advanced.gif)
+![Image of advance progress bar](https://raw.githubusercontent.com/jamhall/progressor/master/examples/advanced.gif)
+
+![Image of basic progress bar](https://raw.githubusercontent.com/jamhall/progressor/master/examples/basic.gif)
 
 ### Installation
 
@@ -130,6 +132,5 @@ The `%message%` placeholder allows you to specify a custom message to be display
 Progressor is a clone of the excellent [Symfony progress bar](http://symfony.com/doc/current/components/console/helpers/progressbar.html) Thanks Symfony!
 
 
-### License
 
-MIT
+
