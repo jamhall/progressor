@@ -3,15 +3,16 @@ import pad from 'pad';
 import { sprintf } from 'sprintf-js';
 import _ from 'lodash';
 import repeat from 'repeat-string';
-
+import charm from 'charm';
+import colors from 'colors';
+import strformat from 'strformat';
 class Progressor {
 
   constructor(options, max = null) {
-
     this.options = {
       barWidth: 28,
-      emptyBarChar: '-',
-      progressChar: '>',
+      emptyBarChar: ' '.bgRed,
+      progressChar: '',
       redrawFreq: 1,
       overwrite: true,
       barChar: null,
@@ -29,16 +30,28 @@ class Progressor {
     this.messages = {};
     this.formatters = null;
     this.options = _.merge(this.options, options);
-    this.output = this.options.stream;
+    this.output = charm();
+    this.output.pipe(process.stdout);
+
+    let tokens = {
+      'current': '%current%'.bold,
+      'max': '%max%'.bold,
+      'percent': '%percent:3s%%'.bold,
+      'elapsed' : '%elapsed:6s%'.bold,
+      'estimated': '%estimated:-6s%'.bold,
+      'memory': '%memory:6s%'.bold,
+      'bar': '%bar%'
+    };
+
     this.formats = _.merge({
-      'normal': ' %current%/%max% [%bar%] %percent:3s%%',
-      'normal_nomax': ' %current% [%bar%]',
-      'verbose': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
-      'verbose_nomax': ' %current% [%bar%] %elapsed:6s%',
-      'very_verbose': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
-      'very_verbose_nomax': ' %current% [%bar%] %elapsed:6s%',
-      'debug': ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
-      'debug_nomax': ' %current% [%bar%] %elapsed:6s% %memory:6s%'
+      'normal': strformat('{current}/{max} {bar} {percent}', tokens),
+      'normal_nomax': strformat(' {current} {bar}', tokens),
+      'verbose': strformat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%', tokens),
+      'verbose_nomax': strformat(' {current} {bar} {elapsed}', tokens),
+      'very_verbose': strformat(' {current}/{max} {bar} {percent} {elapsed}/{estimated}', tokens),
+      'very_verbose_nomax': strformat(' {current} {bar} {elapsed}', tokens),
+      'debug': strformat(' {current}/{max}  {bar} {percent} {elapsed}/{estimated} {memory}', tokens),
+      'debug_nomax': strformat(' {current} {bar} {elapsed} {memory}', tokens)
     }, Progressor._customFormats);
 
     this.format = this.formats[this.options.format];
@@ -151,6 +164,7 @@ class Progressor {
    * Updates the display
    */
   update(message) {
+    this.output.cursor(false);
     let lines = message.split("\n");
     if (null !== this.lastMessagesLength) {
       for (let index in lines) {
@@ -169,6 +183,7 @@ class Progressor {
     }
 
     if (this.formatLineCount) {
+      //this.output.up(this.formatLinecount);
       this.output.write(sprintf("\033[%dA", this.formatLineCount));
     }
 
@@ -187,7 +202,7 @@ class Progressor {
 
   getBarCharacter() {
     if (null === this.options.barChar) {
-      return this.max ? '=' : this.options.emptyBarChar;
+      return this.max ? '='.green.bgGreen : this.options.emptyBarChar;
     }
     return this.options.barChar;
   }

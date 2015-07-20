@@ -2,7 +2,7 @@ var Progressor = require('./../lib/index.js');
 
 var progressor = new Progressor({
   format: 'debug'
-}, 10);
+}, 50);
 
 progressor.start();
 

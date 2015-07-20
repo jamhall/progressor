@@ -43,6 +43,23 @@ class Helpers {
     return string.replace(pattern, "\n").length;
   }
 
+  static encode(xs) {
+    let bytes = (s) => {
+        if (typeof s === 'string') {
+            return s.split('').map(this.ord);
+        }
+        else if (Array.isArray(s)) {
+            return s.reduce(function (acc, c) {
+                return acc.concat(bytes(c));
+            }, []);
+        }
+    }
+    console.log(bytes(xs));
+    return new Buffer([ 0x1b ].concat(bytes(xs)));
+  }
+  static ord (c) {
+    return c.charCodeAt(0)
+  }
 }
 
 export default Helpers;
