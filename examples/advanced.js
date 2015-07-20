@@ -18,6 +18,7 @@ var progressor = new Progressor({
   emptyBarChar: "\033[31m●\033[0m",
   progressChar: "\033[32m➤ \033[0m"
 }, 10);
+
 progressor.setMessage('Starting the demo... fingers crossed', 'title');
 progressor.start();
 
@@ -32,5 +33,4 @@ async.timesSeries(10, function (n, next) {
     progressor.setMessage('Completed download', 'title');
     progressor.finish();
   }, 1000);
-
 });

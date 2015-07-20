@@ -8,12 +8,11 @@ var progressor = new Progressor({
 
 progressor.start();
 
-async.timesSeries(numberImages, function(n, next){
-  require('request').get('http://lorempixel.com/g/700/700/', function(err, data) {
+async.timesSeries(numberImages, function (n, next) {
+  require('request').get('http://lorempixel.com/g/700/700/', function (err, data) {
     progressor.advance();
     next(err, data);
   });
-}, function() {
+}, function () {
   progressor.finish();
-  console.log();
 });

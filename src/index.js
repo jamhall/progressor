@@ -6,7 +6,7 @@ import repeat from 'repeat-string';
 
 class Progressor {
 
-  constructor(options, max= null) {
+  constructor(options, max = null) {
 
     this.options = {
       barWidth: 28,
@@ -16,18 +16,20 @@ class Progressor {
       overwrite: true,
       barChar: null,
       format: 'normal',
+      stream: process.stdout,
       beforeNewlines: null,
-      afterNewlines: null
+      afterNewlines: 1
     };
 
+    this.started = false;
     this.step = 0;
     this.max = max;
     this.percent = 0.0;
     this.lastMessagesLength = 0;
     this.messages = {};
-    this.output = process.stdout;
     this.formatters = null;
-    this.options = _.merge(this.options, options);;
+    this.options = _.merge(this.options, options);
+    this.output = this.options.stream;
     this.formats = _.merge({
       'normal': ' %current%/%max% [%bar%] %percent:3s%%',
       'normal_nomax': ' %current% [%bar%]',
@@ -39,12 +41,24 @@ class Progressor {
       'debug_nomax': ' %current% [%bar%] %elapsed:6s% %memory:6s%'
     }, Progressor._customFormats);
 
-    this.format = this.formats[this.options.format];
-    let lineCount = this.format.split("\n").length -1;
+    let format = this.formats[this.options.format];
 
-    if(lineCount >1) {
+    if (!format) {
+      this.format = this.options.format;
+    }
+
+    let lineCount = this.format.split("\n").length - 1;
+
+    if (lineCount > 1) {
       this.formatLineCount = lineCount;
     }
+  }
+
+  isComplete() {
+    if (this.step === this.max) {
+      return true;
+    }
+    return false;
   }
 
   getFormats() {
@@ -52,7 +66,7 @@ class Progressor {
   }
 
   setMaxSteps(max) {
-    this.max = Math.max(0,  parseInt(max));
+    this.max = Math.max(0, parseInt(max));
     this.stepWidth = this.max ? this.max.toString().length : 4;
   }
 
@@ -83,7 +97,7 @@ class Progressor {
   }
 
   clear() {
-    if(!this.options.overwrite) {
+    if (!this.options.overwrite) {
       return;
     }
     this.update(repeat("\n", this.formatLineCount));
@@ -97,7 +111,10 @@ class Progressor {
    * Call display() to show the progress bar again.
    */
   clear() {
-    "\n".repeat(4);
+    if (!this.options.overwrite) {
+      return;
+    }
+    this.output.write(repeat("\n", 4));
   }
 
   /**
@@ -111,6 +128,9 @@ class Progressor {
    * Sets the current progress
    */
   setProgress(step) {
+    if (this.started === false) {
+      throw new Error('You must call start before you can advance the progress bar');
+    }
     step = parseInt(step);
     if (step < this.step) {
       throw new Error('You can\'t regress the progress bar.');
@@ -163,7 +183,6 @@ class Progressor {
         this.lastMessagesLength = len;
       }
     }
-    this.output.write("\x0D");
   }
 
   getBarCharacter() {
@@ -178,7 +197,7 @@ class Progressor {
       'bar': (bar) => {
         let completeBars = Math.floor
         (bar.max > 0 ? bar.percent * bar.options.barWidth : bar.step % bar.options.barWidth);
-        let display =  repeat(bar.getBarCharacter(),completeBars);
+        let display = repeat(bar.getBarCharacter(), completeBars);
         if (completeBars < bar.options.barWidth) {
           let emptyBars = bar.options.barWidth - completeBars - Helpers.strlenWithoutDecoration(bar.options.progressChar);
           display = display + bar.options.progressChar + repeat(bar.options.emptyBarChar, emptyBars);
@@ -242,7 +261,8 @@ class Progressor {
   }
 
   start(max = null) {
-    if(this.options.beforeNewlines) {
+    this.started = true;
+    if (this.options.beforeNewlines) {
       this.output.write(repeat("\n", parseInt(this.options.beforeNewlines)));
     }
     this.startTime = Date.now();
@@ -265,7 +285,7 @@ class Progressor {
       return;
     }
     this.setProgress(this.max);
-    if(this.options.afterNewlines) {
+    if (this.options.afterNewlines) {
       this.output.write(repeat("\n", parseInt(this.options.afterNewlines)));
     }
   }
@@ -277,10 +297,11 @@ class Progressor {
   static setPlaceholderFormatDefinition(name, definition) {
     this._customPlaceholders[name] = definition;
   }
-};
+}
+;
 
 Progressor._customPlaceholders = {};
 
-Progressor._customFormats = { };
+Progressor._customFormats = {};
 
 export default Progressor;
