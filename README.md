@@ -98,12 +98,30 @@ A format can contain any valid ANSI codes to set colors. For example, for the mi
 
     Progressor.addFormat('minimal', "Progress: \033[0;31m %percent%%\033[0m");
 
-
 ### Custom placeholders
+
+If you want to display some information that depends on the progress bar display that are not available in the list of built-in placeholders, you can create your own. Let's see how you can create a `remaining_steps` placeholder that displays the number of remaining steps:
+
+    Progressor.setPlaceholderFormatDefinition('remaining_steps', function (bar) {
+      return bar.max - bar.step;
+    });
+
+### Custom messages
+
+The `%message%` placeholder allows you to specify a custom message to be displayed with the progress bar. But if you need more than one, just define your own:
+
+    Progressor.addFormat('minimal', "Progress: %percent%%. Filename %filename%");
+    
+    var progressor = new Progressor({
+      format: 'minimal'
+    }, 10);
+    
+    progressor.setMessage('Hello', 'filename');
 
 
 ### Thanks
 
 Progressor is a clone of the excellent [Symfony progress bar](http://symfony.com/doc/current/components/console/helpers/progressbar.html) Thanks Symfony!
+
 
 
