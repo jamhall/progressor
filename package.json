@@ -1,6 +1,6 @@
 {
   "name": "progressor",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Fancy console progress bars",
   "homepage": "https://github.com/jamhall/progressor",
   "repository": {
