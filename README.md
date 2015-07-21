@@ -1,9 +1,9 @@
 # Progressor
-#### Nice progress bars for your nodejs based console apps.
-
-![Image of advance progress bar](https://raw.githubusercontent.com/jamhall/progressor/master/examples/advanced.gif)
+#### Fancy progress bars for your Node.js based console apps.
 
 ![Image of basic progress bar](https://raw.githubusercontent.com/jamhall/progressor/master/examples/basic.gif)
+
+![Image of advanced progress bar](https://raw.githubusercontent.com/jamhall/progressor/master/examples/advanced.gif)
 
 ### Installation
 
