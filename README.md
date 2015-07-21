@@ -80,11 +80,18 @@ A progress bar format is a string that contains specific placeholders (a name en
 * ``memory``: The current memory usage;
 * ``message``: The current message attached to the progress bar.
 
-For instance, here is how you could set the format to be the same as the `debug` one:
+For instance, here is how you could set the format to be the same as the `debug`  but without any fancy colours:
 
     var progressor = new Progressor({
-        format: " %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%"
+      format: " %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%",
+      emptyBarChar: '-',
+      progressChar: '>',
+      barChar: '='
     }, 10);
+    
+This would output:
+
+     10/10 [============================] 100% 6 secs/5 secs 20.5 MiB
 
 Notice the `:6s` part added to some placeholders? That's how you can tweak the appearance of the bar (formatting and alignment). The part after the colon (`:`) is used to set the `sprintf` format of the string.
 
@@ -109,6 +116,13 @@ This code defines a new minimal format that you can then use for your progress b
 A format can contain any valid ANSI codes to set colors. For example, for the minimal example above, we could make the `percent` text red.
 
     Progressor.addFormat('minimal', "Progress: \033[0;31m %percent%%\033[0m");
+   
+Or you could use (https://github.com/marak/colors.js/)[colors.js] to set some nice colours:
+
+    Progressor.addFormat('minimal', "Progress: (%remaining_steps% steps remaining): " + "%percent%%".red.bold);
+
+This will output the percentage as bold and red.
+
 
 ### Custom placeholders
 
