@@ -202,7 +202,7 @@ class Progressor {
 
   getBarCharacter() {
     if (null === this.options.barChar) {
-      return this.max ? '='.green.bgGreen : this.options.emptyBarChar;
+      return this.max ? ' '.green.bgGreen : this.options.emptyBarChar;
     }
     return this.options.barChar;
   }

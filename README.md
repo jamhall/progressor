@@ -33,11 +33,11 @@ First we create an instance of `Progressor`,passing in the options (see below fo
 ### Options
 
  - `barWidth` The width of the progress bar (defaults to `28`)
- - `emptyBarChar` Empty bar character (defaults to `-`)
- - `progressChar` Progress character for the bar (defaults to `>`)
+ - `emptyBarChar` Empty bar character  (see formats below for more information)
+ - `progressChar` Progress character for the bar (see formats below for more information)
  - `redrawFreq` Frequency to update the progress bar(defaults to `1`. Useful is you have a lot of steps)
  - `overwrite`  Overwrite the console text on every refresh (defaults to `true`) 
- - `barChar` Bar character for the bar (defaults to `=`)
+ - `barChar` Bar character for the bar  (see formats below for more information)
  - `beforeNewlines` Insert a number of new lines before outputting the progress bar(defaults to `null` and called on `start`)
  -  `afterNewlines` Insert a number of new lines after outputting the progress bar (defaults to `1` and called on `finish`)
  - `format` The chosen format(defaults to `normal`).
@@ -88,6 +88,11 @@ For instance, here is how you could set the format to be the same as the `debug`
       progressChar: '>',
       barChar: '='
     }, 10);
+    
+Or you could overwrite the debug format completely: 
+
+    Progressor.addFormat('debug', " %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%");
+
     
 This would output:
 
